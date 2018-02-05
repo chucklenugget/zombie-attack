@@ -19,6 +19,18 @@
     const int MAX_ATTACKERS_ALLOWED = 20;
     const float MAX_SPAWN_RADIUS = 200f;
 
+    static string[] WeaponItems = new string[] {
+      "mace",
+      "salvaged.sword",
+      "longsword",
+      "hatchet",
+      "machete",
+      "bone.club",
+      "knife.bone",
+      "pistol.eoka",
+      "pistol.nailgun"
+    };
+
     DynamicConfigFile SettingsFile;
     ZombieAttackSettings Settings;
     Timer AttackTimer;
@@ -80,15 +92,21 @@
       for (int idx = 0; idx < attackers; idx++)
       {
         Vector3 spawnPosition = GetRandomPositionNear(location.Position, 50f);
+
         BaseCombatEntity entity = SpawnAttacker(ZOMBIE_PREFAB, spawnPosition);
         entity.enableSaving = false;
         entity.Spawn();
         entity.InitializeHealth(entity.StartHealth(), entity.StartMaxHealth());
 
-        Puts($"Spawned attacker at {spawnPosition}");
+        ItemDefinition item = ItemManager.FindItemDefinition(WeaponItems.GetRandom());
 
         var npc = entity.gameObject.GetComponent<NPCPlayer>();
+        npc.inventory.containerBelt.Clear();
+        npc.inventory.containerBelt.AddItem(item, 1);
+        npc.EquipTest();
         npc.SetDestination(location.Position);
+
+        Puts($"Spawned attacker at {spawnPosition} equipped with {item.displayName}");
       }
 
       PrintToChat("<color=#ff0000>THE ATTACK HAS BEGUN!</color>");
@@ -172,7 +190,7 @@
       }
     }
 
-    private class UnityVector3Converter : JsonConverter
+    class UnityVector3Converter : JsonConverter
     {
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
       {
@@ -408,7 +426,7 @@
 
       if (intervalMinutes < 1)
       {
-        SendReply(player, $"The interval must be greater than 0.");
+        SendReply(player, "The interval must be greater than 0.");
         return;
       }
 

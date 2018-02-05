@@ -26,7 +26,7 @@
 
       if (intervalMinutes < 1)
       {
-        SendReply(player, $"The interval must be greater than 0.");
+        SendReply(player, "The interval must be greater than 0.");
         return;
       }
 

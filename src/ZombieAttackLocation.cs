@@ -34,7 +34,7 @@
       }
     }
 
-    private class UnityVector3Converter : JsonConverter
+    class UnityVector3Converter : JsonConverter
     {
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
       {
